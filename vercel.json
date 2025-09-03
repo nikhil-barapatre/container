@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/container/:path*",
+      "destination": "/:path*"
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://dashboard-xyz123.vercel.app/:path*"
+    },
+    {
+      "source": "/remote2/:path*",
+      "destination": "https://remote2-xyz123.vercel.app/:path*"
+    }
+  ]
+}
