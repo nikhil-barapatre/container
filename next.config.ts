@@ -10,15 +10,25 @@ module.exports = {
     
     // Only add module federation in development or client-side builds
     if (!isServer || dev) {
-      const remoteUrl = process.env.NODE_ENV === 'production' 
-        ? {
-            dashboard: `dashboard@https://dashboard.vercel.app/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`,
-            remote2: `remote2@https://remote2.vercel.app/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`
-          }
-        : {
-            dashboard: `dashboard@http://localhost:3001/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`,
-            remote2: `remote2@http://localhost:3002/_next/static/${isServer ? "ssr" : "chunks"}/remoteEntry.js`
-          };
+      const remoteUrl =
+  process.env.NODE_ENV === "production"
+    ? {
+        dashboard: `dashboard@${process.env.NEXT_PUBLIC_DASHBOARD_URL}/_next/static/${
+          isServer ? "ssr" : "chunks"
+        }/remoteEntry.js?v=${Date.now()}`,
+        remote2: `remote2@${process.env.NEXT_PUBLIC_REMOTE2_URL}/_next/static/${
+          isServer ? "ssr" : "chunks"
+        }/remoteEntry.js?v=${Date.now()}`,
+      }
+    : {
+        dashboard: `dashboard@http://localhost:3001/_next/static/${
+          isServer ? "ssr" : "chunks"
+        }/remoteEntry.js`,
+        remote2: `remote2@http://localhost:3002/_next/static/${
+          isServer ? "ssr" : "chunks"
+        }/remoteEntry.js`,
+      };
+
 
       config.plugins.push(
         new NextFederationPlugin({
