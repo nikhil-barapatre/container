@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Router from 'next/router';
 import { AuthService } from '../../utils/auth';
 
 interface LoginState {
@@ -8,8 +7,8 @@ interface LoginState {
   error: string;
 }
 
-export default class LoginPage extends Component<{}, LoginState> {
-  constructor(props: {}) {
+export default class LoginPage extends Component<Record<string, never>, LoginState> {
+  constructor(props: Record<string, never>) {
     super(props);
     this.state = {
       email: '',

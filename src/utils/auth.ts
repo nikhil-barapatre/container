@@ -65,14 +65,14 @@ export class AuthService {
   }
 
   // Decode token payload (for demo purposes)
-  static decodeToken(token: string): any {
+  static decodeToken(token: string): unknown {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) return null;
       
       const payload = JSON.parse(atob(parts[1]));
       return payload;
-    } catch (error) {
+    } catch {
       return null;
     }
   }

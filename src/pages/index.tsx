@@ -4,33 +4,51 @@ import { AuthService } from '../utils/auth';
 interface HomeState {
   isAuthenticated: boolean;
   userEmail: string;
+  hasError: boolean;
 }
 
-export default class Home extends Component<{}, HomeState> {
-  constructor(props: {}) {
+export default class Home extends Component<Record<string, never>, HomeState> {
+  constructor(props: Record<string, never>) {
     super(props);
     this.state = {
       isAuthenticated: false,
-      userEmail: ''
+      userEmail: '',
+      hasError: false
     };
   }
 
   componentDidMount() {
-    this.checkAuthentication();
+    try {
+      this.checkAuthentication();
+    } catch (error) {
+      console.error('Error during component mount:', error);
+      // Fallback to unauthenticated state
+      this.setState({ isAuthenticated: false, userEmail: '', hasError: true });
+    }
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('React error caught:', error, errorInfo);
+    this.setState({ hasError: true, isAuthenticated: false, userEmail: '' });
   }
 
   checkAuthentication = () => {
-    const isAuth = AuthService.isAuthenticated();
-    
-    if (isAuth) {
-      const token = AuthService.getToken();
-      if (token) {
-        const payload = AuthService.decodeToken(token);
-        this.setState({
-          isAuthenticated: true,
-          userEmail: payload?.email || 'Unknown User'
-        });
+    try {
+      const isAuth = AuthService.isAuthenticated();
+      
+      if (isAuth) {
+        const token = AuthService.getToken();
+        if (token) {
+          const payload = AuthService.decodeToken(token) as { email?: string } | null;
+          this.setState({
+            isAuthenticated: true,
+            userEmail: payload?.email || 'Unknown User'
+          });
+        }
       }
+    } catch (error) {
+      console.error('Error checking authentication:', error);
+      this.setState({ isAuthenticated: false, userEmail: '', hasError: true });
     }
   };
 
@@ -98,15 +116,22 @@ export default class Home extends Component<{}, HomeState> {
             </p>
           </div>
           <div className="mt-6 text-center">
-            <a
-              href="/container/login"
+            <button
+              onClick={() => window.location.href = '/container/login'}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Go to Login Page
-            </a>
+            </button>
           </div>
         </div>
       </div>
     );
   }
+}
+
+// Disable static generation to prevent prerendering issues with microfrontends
+export async function getServerSideProps() {
+  return {
+    props: {}, // Will be passed to the page component as props
+  };
 }
